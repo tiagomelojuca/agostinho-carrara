@@ -63,7 +63,7 @@
         }
 
         body #wrapper .header {
-            padding: 1.5rem 0;
+            padding: 20px 0;
         }
 
         body #wrapper .header .modelev-logo {
@@ -92,7 +92,7 @@
 
         body #wrapper .spacer {
             display: block;
-            padding: 1.5rem 0;
+            padding: 20px 0;
         }
 
         body #wrapper .footer {
@@ -100,13 +100,13 @@
         }
 
         body #wrapper .footer .footer-img {
-            width: 128px;
+            width: 96px;
             height: auto;
         }
 
         body #wrapper .footer p {
             font-size: 0.8em;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
         body #wrapper .footer span {
@@ -122,9 +122,21 @@
             color: #49c2c9;
         }
 
-        #content {
+        #wrapper #content {
             width: 90%;
-            margin: 40px auto;
+            margin: 0 auto;
+        }
+
+        #wrapper #adsense-banner {
+            width: 320px;
+            height: 100px;
+            background-color: rgba(16, 82, 148, 0.6);
+            margin: 0 auto;
+            margin-bottom: 20px;
+        }
+
+        #wrapper #adsense-banner a {
+            color: #fff;
         }
 
         #wrapper #content #pagination {
@@ -143,7 +155,7 @@
             width: calc(100% - 8px);
             background-color: rgba(16, 82, 148, 0.6);
             padding: 20px;
-            margin-bottom: 40px;
+            margin-bottom: 28px;
             font-family: 'Handlee', cursive;
             border-radius: 10px;
             box-shadow: 8px 8px 0 rgba(6, 29, 53, 0.6);
@@ -157,16 +169,37 @@
         #buttons-wrapper button {
             width: 64px;
             height: 64px;
-            background-color: rgba(16, 82, 148, 0.6);
+            background-color: rgba(25, 68, 122, 1);
             outline: none;
             border-radius: 50%;
-            border-left-color: rgba(16, 82, 148, 1);
-            border-top-color: rgba(16, 82, 148, 1);
-            border-right-color: rgba(16, 82, 148, 0.2);
-            border-bottom-color: rgba(16, 82, 148, 0.2);
+            border-left-color: rgba(16, 82, 148, 0.4);
+            border-top-color: rgba(16, 82, 148, 0.4);
+            border-right-color: rgba(16, 82, 148, 0.4);
+            border-bottom-color: rgba(16, 82, 148, 0.4);
         }
 
         #buttons-wrapper button img {
+            filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+            width: 48px;
+            height: 32px;
+        }
+
+        #share-button {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            width: 64px;
+            height: 64px;
+            background-color: rgba(25, 68, 122, 1);
+            outline: none;
+            border-radius: 50%;
+            border-left-color: rgba(16, 82, 148, 0.4);
+            border-top-color: rgba(16, 82, 148, 0.4);
+            border-right-color: rgba(16, 82, 148, 0.4);
+            border-bottom-color: rgba(16, 82, 148, 0.4);
+        }
+
+        #share-button img {
             filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
             width: 48px;
             height: 32px;
@@ -183,9 +216,16 @@
     </div>
 
     <div id="wrapper">
+
+        <button id="share-button" onclick="sharePhrase()"><img src="share.svg" alt="share"></button>
+
         <div class="header">
             <img style="border: 3px solid #fff" class="modelev-logo" src="avatar.jpg"><br>
             @agostinho-carrara
+        </div>
+
+        <div id="adsense-banner">
+            <a href="#"><img src="banner-placeholder.png" alt="banner placeholder"></a>
         </div>
 
         <div id="content">
@@ -262,6 +302,11 @@
             .catch(function (error) {
                 document.getElementById('frase').innerHTML = error;
             });
+        }
+
+        function sharePhrase() {
+            const phraseId = parseInt(document.getElementById('currentFrase').innerHTML, 10);
+            alert('Funcionalidade em desenvolvimento');
         }
 
         getPost('random');
