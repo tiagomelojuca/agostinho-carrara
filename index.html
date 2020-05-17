@@ -13,6 +13,8 @@
     <meta name="theme-color" content="#ffffff">
 
     <style>
+
+        /* “É hora de esquecer os erros do passado e começar a planejar os erros do futuro.” */
         
         @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
 
@@ -97,7 +99,7 @@
         #wrapper p {
             font-size: 2em;
             font-style: italic;
-            margin: 2em 0;
+            margin: 0;
         }
 
         @media screen and (max-width: 768px) {
@@ -106,7 +108,53 @@
             }
         }
 
+        #content {
+            width: 90%;
+            margin: 40px auto;
+        }
+
+        #wrapper #content #pagination {
+            font-size: 1em;
+            margin: 0;
+            padding: 0;
+            text-align: right;
+            margin-right: 16px;
+            opacity: 0;
+            display: none;
+        }
+
+        #wrapper #content #frase {
+            background-color: rgba(16, 82, 148, 0.6);
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        #buttons-wrapper {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #buttons-wrapper button {
+            width: 64px;
+            height: 64px;
+            background-color: rgba(16, 82, 148, 0.6);
+            outline: none;
+            border-radius: 50%;
+            border-left-color: rgba(16, 82, 148, 1);
+            border-top-color: rgba(16, 82, 148, 1);
+            border-right-color: rgba(16, 82, 148, 0.2);
+            border-bottom-color: rgba(16, 82, 148, 0.2);
+        }
+
+        #buttons-wrapper button img {
+            filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+            width: 48px;
+            height: 32px;
+        }
+
     </style>
+
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 </head>
 <body>
@@ -120,15 +168,83 @@
             @agostinho-carrara
         </div>
 
-        <p>“É hora de esquecer os erros do passado e começar a planejar os erros do futuro.”</p>
-
-        <p>“O dinheiro é um traidor. Sempre que saímos juntos, volto sempre sozinho pra casa.”</p>
-        
+        <div id="content">
+            <p id="pagination"><span id="currentFrase">0</span> de <span id="lastFrase">0</span></p>
+            <p id="frase">Carregando...</p>
+            <div id="buttons-wrapper">
+                <button onclick="getPost('previous')"><img src="arrow.svg" alt="back"></button>
+                <button onclick="getPost('random')"><img src="rng.svg" alt="random"></button>
+                <button onclick="getPost('next')"><img src="arrow.svg" alt="next" style="transform: scaleX(-1)"></button>
+            </div>
+        </div>
 
         <div class="spacer"></div>
         <div class="footer">
             <img class="footer-img" src="logo-footer.png">
         </div>
     </div>
+
+    <script>
+
+        const contentUrl = 'https://public-api.wordpress.com/rest/v1.1/sites/agostinhocarrarablog.wordpress.com/posts';
+
+        function injectPostInHTML( origin, index ) {
+            document.getElementById('frase').innerHTML = origin[index].content;
+        }
+
+        function sortPost( origin, maxValue, callback ) {
+            let sortedValue = Math.floor(Math.random() * maxValue);
+            document.getElementById('currentFrase').innerHTML = sortedValue + 1;
+            document.getElementById('lastFrase').innerHTML = maxValue;
+            return callback(origin, sortedValue);
+        }
+
+        function prevPost( origin, maxValue, callback ) {
+            let current = parseInt(document.getElementById('currentFrase').innerHTML, 10);
+            if (current > 1) {
+                current = current - 1;
+            } else {
+                current = maxValue;
+            }
+            document.getElementById('currentFrase').innerHTML = current;
+            return callback(origin, current - 1);
+        }
+
+        function nextPost( origin, maxValue, callback ) {
+            let current = parseInt(document.getElementById('currentFrase').innerHTML, 10);
+            if (current < maxValue) {
+                current = current + 1;
+            } else {
+                current = 1;
+            }
+            document.getElementById('currentFrase').innerHTML = current;
+            return callback(origin, current - 1);
+        }
+
+        function getPost( target ) {
+            axios.get(contentUrl)
+            .then(function (response) {
+
+                if(target == 'random') {
+                    sortPost( response.data.posts, response.data.found, injectPostInHTML );
+                }
+
+                if(target == 'next') {
+                    nextPost( response.data.posts, response.data.found, injectPostInHTML );
+                }
+
+                if(target == 'previous') {
+                    prevPost( response.data.posts, response.data.found, injectPostInHTML );
+                }
+
+            })
+            .catch(function (error) {
+                document.getElementById('frase').innerHTML = error;
+            });
+        }
+
+        getPost('random');
+
+    </script>
 </body>
 </html>
