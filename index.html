@@ -261,10 +261,43 @@
 
     <script>
 
+        // Get query params from url
+        // Call the param value with urlParams["searchedQueryParam"]
+        var urlParams;
+        (window.onpopstate = function () {
+            var match,
+                pl     = /\+/g,
+                search = /([^&=]+)=?([^&]*)/g,
+                decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+                query  = window.location.search.substring(1);
+
+            urlParams = {};
+            while (match = search.exec(query))
+            urlParams[decode(match[1])] = decode(match[2]);
+        })();
+
+        // Now lets do our job
         const contentUrl = 'https://public-api.wordpress.com/rest/v1.1/sites/agostinhocarrarablog.wordpress.com/posts';
 
         function injectPostInHTML( origin, index ) {
             document.getElementById('frase').innerHTML = origin[index].content;
+        }
+
+        function choosePost( origin, maxValue, callback ) {
+            let current = parseInt(urlParams["phrase"], 10);
+            if (current < 1) {
+                alert('reached');
+                getPost('random');
+            } else {
+                if(current > maxValue) {
+                    alert('reached');
+                    getPost('random');
+                } else {
+                    document.getElementById('currentFrase').innerHTML = current;
+                    document.getElementById('lastFrase').innerHTML = maxValue;
+                    return callback(origin, current - 1);
+                }
+            }
         }
 
         function sortPost( origin, maxValue, callback ) {
@@ -300,6 +333,10 @@
             axios.get(contentUrl)
             .then(function (response) {
 
+                if(target == 'choose') {
+                    choosePost( response.data.posts, response.data.found, injectPostInHTML );
+                }
+
                 if(target == 'random') {
                     sortPost( response.data.posts, response.data.found, injectPostInHTML );
                 }
@@ -318,12 +355,26 @@
             });
         }
 
+        function initPhrase() {
+            if( urlParams["phrase"] == null ) {
+                getPost('random');
+            } else {
+                const sentPhraseId = parseInt(urlParams["phrase"], 10);
+                console.log(sentPhraseId);
+                if( isNaN(sentPhraseId) ) {
+                    getPost('random');
+                } else {
+                    getPost('choose');
+                }
+            }
+        }
+
         function sharePhrase() {
             const phraseId = parseInt(document.getElementById('currentFrase').innerHTML, 10);
             alert('Funcionalidade em desenvolvimento');
         }
 
-        getPost('random');
+        initPhrase();
 
     </script>
 </body>
