@@ -284,13 +284,11 @@
         }
 
         function choosePost( origin, maxValue, callback ) {
-            let current = parseInt(urlParams["phrase"], 10);
+            let current = parseInt(urlParams["frase"], 10);
             if (current < 1) {
-                alert('reached');
                 getPost('random');
             } else {
                 if(current > maxValue) {
-                    alert('reached');
                     getPost('random');
                 } else {
                     document.getElementById('currentFrase').innerHTML = current;
@@ -356,10 +354,10 @@
         }
 
         function initPhrase() {
-            if( urlParams["phrase"] == null ) {
+            if( urlParams["frase"] == null ) {
                 getPost('random');
             } else {
-                const sentPhraseId = parseInt(urlParams["phrase"], 10);
+                const sentPhraseId = parseInt(urlParams["frase"], 10);
                 console.log(sentPhraseId);
                 if( isNaN(sentPhraseId) ) {
                     getPost('random');
