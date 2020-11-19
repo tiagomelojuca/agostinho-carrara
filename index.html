@@ -14,6 +14,15 @@
 
     <script data-ad-client="ca-pub-3694191901402670" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
+    <!-- BEGIN: Modal by BBBootstrap Team -->
+    <!-- https://bbbootstrap.com/snippets/share-social-media-modal-link-copy-31507288 -->
+    <link href='https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet'>
+    <link href='https://use.fontawesome.com/releases/v5.8.1/css/all.css' rel='stylesheet'>
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+    <script type='text/javascript' src='https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js'></script>
+    <link rel="stylesheet" href="modal.css">
+    <!-- END: Modal by BBBootstrap Team -->
+
     <style>
         
         @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;500;700&display=swap');
@@ -231,7 +240,9 @@
 
     <div id="wrapper">
 
-        <button id="share-button" onclick="sharePhrase()"><img src="share.svg" alt="share"></button>
+        <button id="share-button" data-toggle="modal" data-target="#shareModal">
+            <img src="share.svg" alt="share">
+        </button>
 
         <div class="header">
             <img style="border: 3px solid #fff" class="modelev-logo" src="avatar.jpg"><br>
@@ -258,6 +269,47 @@
             <p>Feito com <span>❤</span> <a href="https://www.tiagomelojuca.com/">Tiago Melo Jucá</a></p>
         </div>
     </div>
+
+    <!-- BEGIN: Modal by BBBootstrap Team -->
+    <div class="modal fade" id="shareModal" tabindex="-1" role="dialog" aria-labelledby="shareModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content col-12">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Share</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="icon-container1 d-flex">
+                        <div class="smd"> <i class="img-thumbnail fab fa-whatsapp fa-2x" style="color: #25D366;background-color: #cef5dc;"></i>
+                            <p>Whatsapp</p>
+                        </div>
+                        <div class="smd"> <i class="img-thumbnail fab fa-telegram fa-2x" style="color: #4c6ef5;background-color: aliceblue"></i>
+                            <p>Telegram</p>
+                        </div>
+                        <div class="smd"> <i class=" img-thumbnail fab fa-twitter fa-2x" style="color:#4c6ef5;background-color: aliceblue"></i>
+                            <p>Twitter</p>
+                        </div>
+                        <div class="smd"> <i class="img-thumbnail fab fa-facebook fa-2x" style="color: #3b5998;background-color: #eceff5;"></i>
+                            <p>Facebook</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer"> <label style="font-weight: 600">Page Link <span class="message"></span></label><br />
+                    <div class="row">
+                        <input class="col-10 ur" type="url" placeholder="https://agostinhocarrara.com.br/" id="baseLinkInput" readonly aria-describedby="inputGroup-sizing-default" style="height: 40px;">
+                        <button class="cpy" onclick="copyPhraseLink()"><i class="far fa-clone"></i></button>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <!-- END: Modal by BBBootstrap Team -->
 
     <script>
 
@@ -337,9 +389,61 @@
             });
         }
 
-        function sharePhrase() {
-            const phraseId = getCurrentPhrase();
-            alert('Funcionalidade em desenvolvimento');
+        function constructShareLinks() {
+
+            const currentPhrase = getCurrentPhrase();
+            const baseUrl = `https://agostinhocarrara.com.br/?frase=${currentPhrase}`;
+            const callToAction = 'Olha que bacana essa super sabedoria do mestre Agostinho Carrara!';
+            const description = 'Frases divertidas do mestre Agostinho 😎';
+            const shareText = `${callToAction} - ${description}`;
+            const shareTextUrlEncoded = shareText.replace(/ /g, '%20');
+            const shareTextWppTelegram = `👆👆%20${shareTextUrlEncoded}`;
+
+            const socialLinks = {
+                baseurl: `https://agostinhocarrara.com.br/?frase=${currentPhrase}`,
+                whatsapp: `https://web.whatsapp.com/send?text=${baseUrl}%0A${shareTextWppTelegram}`,
+                telegram: `https://t.me/share/url?url=${baseUrl}&text=${shareTextWppTelegram}`,
+                twitter: `https://twitter.com/intent/tweet?text=${shareTextUrlEncoded}&url=${baseUrl}`,
+                facebook: `https://www.facebook.com/sharer/sharer.php?u=${baseUrl}`
+            }
+
+            return socialLinks;
+            
+        }
+
+        function copyPhraseLink() {
+            const socialLinks = constructShareLinks();
+            navigator.clipboard.writeText(socialLinks.baseurl);
+            $(".message").text("Link copiado!");
+        }
+
+        function setupEventListeners() {
+
+            document.querySelector('#share-button').addEventListener('click', function() {
+                const socialLinks = constructShareLinks();
+                document.querySelector('#baseLinkInput').placeholder = socialLinks.baseurl;
+            });
+
+            document.querySelector('.fa-whatsapp').addEventListener('click', function() {
+                const socialLinks = constructShareLinks();
+                window.open(socialLinks.whatsapp, '_blank');
+            });
+
+            document.querySelector('.fa-telegram').addEventListener('click', function() {
+                const socialLinks = constructShareLinks();
+                window.open(socialLinks.telegram, '_blank');
+            });
+
+            document.querySelector('.fa-twitter').addEventListener('click', function() {
+                const socialLinks = constructShareLinks();
+                window.open(socialLinks.twitter, '_blank');
+            });
+
+            document.querySelector('.fa-facebook').addEventListener('click', function() {
+                const socialLinks = constructShareLinks();
+                window.open(socialLinks.facebook, '_blank');
+            });
+
         }
 
         function initPhrase() {
@@ -347,6 +451,7 @@
             getPost('choose');
         }
 
+        setupEventListeners();
         initPhrase();
 
     </script>
