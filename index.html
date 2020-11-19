@@ -276,7 +276,7 @@
             <div class="modal-content col-12">
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Share</h5>
+                    <h5 class="modal-title">Compartilhar...</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -299,7 +299,8 @@
                     </div>
                 </div>
 
-                <div class="modal-footer"> <label style="font-weight: 600">Page Link <span class="message"></span></label><br />
+                <div class="modal-footer">
+                    <label>Link da Frase: <span class="message"></span></label><br />
                     <div class="row">
                         <input class="col-10 ur" type="url" placeholder="https://agostinhocarrara.com.br/" id="baseLinkInput" readonly aria-describedby="inputGroup-sizing-default" style="height: 40px;">
                         <button class="cpy" onclick="copyPhraseLink()"><i class="far fa-clone"></i></button>
@@ -414,7 +415,7 @@
         function copyPhraseLink() {
             const socialLinks = constructShareLinks();
             navigator.clipboard.writeText(socialLinks.baseurl);
-            $(".message").text("Link copiado!");
+            $(".message").text("Copiado");
         }
 
         function setupEventListeners() {

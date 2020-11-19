@@ -9,7 +9,8 @@
 }
 
 .modal-title {
-    font-weight: 900
+    font-weight: 900;
+    color: rgba(6, 29, 53, 1);
 }
 
 .modal-content {
@@ -43,6 +44,11 @@
     display: block
 }
 
+.modal-footer label {
+    font-weight: 600;
+    color: rgba(6, 29, 53, 1);
+}
+
 .ur {
     border: none;
     background-color: #e6e2e2;
@@ -73,4 +79,8 @@ button:focus {
 .message {
     font-size: 11px;
     color: #ee5535
+}
+
+i.fa-clone {
+    margin-right: 15px;
 }
