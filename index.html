@@ -279,6 +279,7 @@
         })();
 
         // Syntax Sugar
+        const queryPhrase = parseInt(urlParams["frase"], 10);
         const $shownPhrase = document.getElementById('frase');
         const $currentPhrase = document.getElementById('currentFrase');
         const $lastPhrase = document.getElementById('lastFrase');
@@ -286,18 +287,16 @@
         function getCurrentPhrase() { return parseInt($currentPhrase.innerHTML, 10) }
         function setCurrentPhrase(value) { $currentPhrase.innerHTML = value }
         function setLastPhrase(value) { $lastPhrase.innerHTML = value }
-        function getQueryPhrase() { return parseInt(urlParams["frase"], 10) }
 
         // Now lets do our job
         const contentUrl = 'https://public-api.wordpress.com/rest/v1.1/sites/agostinhocarrarablog.wordpress.com/posts';
 
         function choosePost( origin, maxValue, callback ) {
-            const currentPhrase = getQueryPhrase();
-            const currentPhraseId = currentPhrase - 1;
-            if (currentPhrase < 1 || currentPhrase > maxValue) return getPost('random');
-            setCurrentPhrase(currentPhrase);
+            const queryPhraseId = queryPhrase - 1;
+            if (queryPhrase < 1 || queryPhrase > maxValue) return getPost('random');
+            setCurrentPhrase(queryPhrase);
             setLastPhrase(maxValue);
-            return callback(origin, currentPhraseId);
+            return callback(origin, queryPhraseId);
         }
 
         function sortPost( origin, maxValue, callback ) {
@@ -344,8 +343,7 @@
         }
 
         function initPhrase() {
-            const sentPhraseId = getQueryPhrase();
-            if( !urlParams["frase"] || isNaN(sentPhraseId) ) return getPost('random');
+            if( !queryPhrase || isNaN(queryPhrase) ) return getPost('random');
             getPost('choose');
         }
 
