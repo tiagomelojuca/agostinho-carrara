@@ -263,6 +263,8 @@
 
         // Get query params from url
         // Call the param value with urlParams["searchedQueryParam"]
+        // Snippet by Andy E
+        // https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
         var urlParams;
         (window.onpopstate = function () {
             var match,
@@ -276,100 +278,75 @@
             urlParams[decode(match[1])] = decode(match[2]);
         })();
 
+        // Syntax Sugar
+        const $shownPhrase = document.getElementById('frase');
+        const $currentPhrase = document.getElementById('currentFrase');
+        const $lastPhrase = document.getElementById('lastFrase');
+        function injectPostInHTML( origin, index ) { $shownPhrase.innerHTML = origin[index].content }
+        function getCurrentPhrase() { return parseInt($currentPhrase.innerHTML, 10) }
+        function setCurrentPhrase(value) { $currentPhrase.innerHTML = value }
+        function setLastPhrase(value) { $lastPhrase.innerHTML = value }
+        function getQueryPhrase() { return parseInt(urlParams["frase"], 10) }
+
         // Now lets do our job
         const contentUrl = 'https://public-api.wordpress.com/rest/v1.1/sites/agostinhocarrarablog.wordpress.com/posts';
 
-        function injectPostInHTML( origin, index ) {
-            document.getElementById('frase').innerHTML = origin[index].content;
-        }
-
         function choosePost( origin, maxValue, callback ) {
-            let current = parseInt(urlParams["frase"], 10);
-            if (current < 1) {
-                getPost('random');
-            } else {
-                if(current > maxValue) {
-                    getPost('random');
-                } else {
-                    document.getElementById('currentFrase').innerHTML = current;
-                    document.getElementById('lastFrase').innerHTML = maxValue;
-                    return callback(origin, current - 1);
-                }
-            }
+            const currentPhrase = getQueryPhrase();
+            const currentPhraseId = currentPhrase - 1;
+            if (currentPhrase < 1 || currentPhrase > maxValue) return getPost('random');
+            setCurrentPhrase(currentPhrase);
+            setLastPhrase(maxValue);
+            return callback(origin, currentPhraseId);
         }
 
         function sortPost( origin, maxValue, callback ) {
-            let sortedValue = Math.floor(Math.random() * maxValue);
-            document.getElementById('currentFrase').innerHTML = sortedValue + 1;
-            document.getElementById('lastFrase').innerHTML = maxValue;
+            const sortedValue = Math.floor(Math.random() * maxValue);
+            setCurrentPhrase(sortedValue + 1);
+            setLastPhrase(maxValue);
             return callback(origin, sortedValue);
         }
 
         function prevPost( origin, maxValue, callback ) {
-            let current = parseInt(document.getElementById('currentFrase').innerHTML, 10);
-            if (current > 1) {
-                current = current - 1;
-            } else {
-                current = maxValue;
-            }
-            document.getElementById('currentFrase').innerHTML = current;
-            return callback(origin, current - 1);
+            const currentPhrase = getCurrentPhrase();
+            const newPhrase = currentPhrase > 1 ? currentPhrase - 1 : maxValue;
+            const newPhraseId = newPhrase - 1;
+            setCurrentPhrase(newPhrase);
+            return callback(origin, newPhraseId);
         }
 
         function nextPost( origin, maxValue, callback ) {
-            let current = parseInt(document.getElementById('currentFrase').innerHTML, 10);
-            if (current < maxValue) {
-                current = current + 1;
-            } else {
-                current = 1;
-            }
-            document.getElementById('currentFrase').innerHTML = current;
-            return callback(origin, current - 1);
+            const currentPhrase = getCurrentPhrase();
+            const newPhrase = currentPhrase < maxValue ? currentPhrase + 1 : 1;
+            const newPhraseId = newPhrase - 1;
+            setCurrentPhrase(newPhrase);
+            return callback(origin, newPhraseId);
         }
 
-        function getPost( target ) {
+        function getPost(opt) {
             axios.get(contentUrl)
             .then(function (response) {
-
-                if(target == 'choose') {
-                    choosePost( response.data.posts, response.data.found, injectPostInHTML );
-                }
-
-                if(target == 'random') {
-                    sortPost( response.data.posts, response.data.found, injectPostInHTML );
-                }
-
-                if(target == 'next') {
-                    nextPost( response.data.posts, response.data.found, injectPostInHTML );
-                }
-
-                if(target == 'previous') {
-                    prevPost( response.data.posts, response.data.found, injectPostInHTML );
-                }
-
+                const posts = response.data.posts.reverse();
+                const numPosts = posts.length;
+                if(opt === 'choose') return choosePost( posts, numPosts, injectPostInHTML );
+                if(opt === 'random') return sortPost( posts, numPosts, injectPostInHTML );
+                if(opt === 'next') return nextPost( posts, numPosts, injectPostInHTML );
+                if(opt === 'previous') return prevPost( posts, numPosts, injectPostInHTML );
             })
             .catch(function (error) {
                 document.getElementById('frase').innerHTML = error;
             });
         }
 
-        function initPhrase() {
-            if( urlParams["frase"] == null ) {
-                getPost('random');
-            } else {
-                const sentPhraseId = parseInt(urlParams["frase"], 10);
-                console.log(sentPhraseId);
-                if( isNaN(sentPhraseId) ) {
-                    getPost('random');
-                } else {
-                    getPost('choose');
-                }
-            }
+        function sharePhrase() {
+            const phraseId = getCurrentPhrase();
+            alert('Funcionalidade em desenvolvimento');
         }
 
-        function sharePhrase() {
-            const phraseId = parseInt(document.getElementById('currentFrase').innerHTML, 10);
-            alert('Funcionalidade em desenvolvimento');
+        function initPhrase() {
+            const sentPhraseId = getQueryPhrase();
+            if( !urlParams["frase"] || isNaN(sentPhraseId) ) return getPost('random');
+            getPost('choose');
         }
 
         initPhrase();
